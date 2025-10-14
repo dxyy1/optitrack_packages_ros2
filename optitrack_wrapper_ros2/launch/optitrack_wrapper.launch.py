@@ -10,11 +10,11 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    server_address_arg = DeclareLaunchArgument(
-        'server_address',
-        default_value=''
-    )
-    server_address = LaunchConfiguration('server_address')
+    # server_address_arg = DeclareLaunchArgument(
+    #     'server_address',
+    #     default_value=''
+    # )
+    # server_address = LaunchConfiguration('server_address')
 
     # Create the NatNet client node
     config = os.path.join(
@@ -26,7 +26,8 @@ def generate_launch_description():
         package='optitrack_wrapper_ros2',
         executable='wrapper_node',
         name='optitrack_wrapper_node',
-        parameters=[config, {'server_address': server_address}],
+        parameters=[config ],
+        # parameters=[config, {'server_address': server_address}],
         # prefix=['xterm -e gdb -ex run --args'],
         output='screen',
         emulate_tty=True

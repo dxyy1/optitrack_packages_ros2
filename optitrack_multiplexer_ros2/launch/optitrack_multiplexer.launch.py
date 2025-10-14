@@ -9,13 +9,13 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
 
     ld = LaunchDescription()
-    rigid_body_names_arg = DeclareLaunchArgument(
-        'rigid_body_names',
-        default_value='',  # Default value as an empty list
-        description='List of rigid body names'
-    )
+    # rigid_body_names_arg = DeclareLaunchArgument(
+    #     'rigid_body_names',
+    #     default_value='',  # Default value as an empty list
+    #     description='List of rigid body names'
+    # )
 
-    rigid_body_names = LaunchConfiguration('rigid_body_names')
+    # rigid_body_names = LaunchConfiguration('rigid_body_names')
 
     # Create the NatNet client node
     config = os.path.join(
@@ -27,7 +27,8 @@ def generate_launch_description():
         package='optitrack_multiplexer_ros2',
         executable='multiplexer_node',
         name='optitrack_multiplexer_node',
-        parameters=[config, {'rigid_body_names': rigid_body_names}],
+        parameters=[config],
+        # parameters=[config, {'rigid_body_names': rigid_body_names}],
         # prefix=['xterm -e gdb -ex run --args'],
         output='screen',
         emulate_tty=True
