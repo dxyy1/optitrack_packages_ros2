@@ -3,6 +3,7 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 import os
+import launch
 from ament_index_python.packages import get_package_share_directory
 
 
@@ -22,7 +23,8 @@ def get_nodes(server_address=None, rigid_body_names=None):
         # parameters=[config_wrapper, {'server_address': server_address}],
         # prefix=['xterm -e gdb -ex run --args'],
         output='screen',
-        emulate_tty=True
+        emulate_tty=True,
+        on_exit=launch.actions.EmitEvent(event=launch.events.Shutdown())
     )
 
     config_multiplexer = os.path.join(

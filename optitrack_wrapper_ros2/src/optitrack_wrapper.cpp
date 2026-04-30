@@ -35,7 +35,7 @@ OptitrackWrapper::OptitrackWrapper() : ::rclcpp::Node("optitrack_wrapper") {
           "~/" + topic_frame_data_, 0);
 }
 
-void OptitrackWrapper::SetupNatNet() { 
+bool OptitrackWrapper::SetupNatNet() { 
    // initialize client
    InitializeClient();
 
@@ -43,7 +43,9 @@ void OptitrackWrapper::SetupNatNet() {
    InitializeClientParams();
  
    // connect optitrack
-   ConnectOptitrack();
+   if (!ConnectOptitrack()) {
+     return false;
+   }
  
    // get data descriptions
    GetDataDescriptions();
@@ -53,6 +55,8 @@ void OptitrackWrapper::SetupNatNet() {
  
    // initialize frame data msg
    frame_data_msg_ = ::optitrack_wrapper_ros2_msgs::msg::FrameOfMocapData();
+
+   return true;
 }
 
 void NATNET_CALLCONV ProcessFrameCallback(sFrameOfMocapData *data,
@@ -391,6 +395,10 @@ void OptitrackWrapper::CreateDataDescriptionsMessage() {
   // clear the msg
   ClearDataDescriptions();
 
+  if (data_descriptions_ == nullptr) {
+    return;
+  }
+
   // create the msg
   for (int i = 0; i < data_descriptions_->nDataDescriptions; i++) {
     if (data_descriptions_->arrDataDescriptions[i].type ==
@@ -624,7 +632,7 @@ void OptitrackWrapper::PrintDataDescriptions() {
   }
 }
 
-void OptitrackWrapper::ConnectOptitrack() {
+bool OptitrackWrapper::ConnectOptitrack() {
 
   RCLCPP_INFO(get_logger(),
               "Trying to connect to Optitrack NatNET SDK at %s ...",
@@ -640,6 +648,7 @@ void OptitrackWrapper::ConnectOptitrack() {
                  "Unable to connect to server.  Error code: "
                  "%d. Exiting.",
                  ret_code);
+    return false;
   } else {
     // connection succeeded
     void *p_result;
@@ -716,6 +725,7 @@ void OptitrackWrapper::ConnectOptitrack() {
     } else
       RCLCPP_ERROR(get_logger(), "Error getting Analog frame rate.");
   }
+  return true;
 }
 
 void OptitrackWrapper::DeclareRosParameters() {

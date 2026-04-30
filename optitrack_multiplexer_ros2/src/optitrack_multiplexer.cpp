@@ -19,6 +19,10 @@ OptitrackMultiplexer::OptitrackMultiplexer()
   // get data descriptions
   GetDataDescriptionsSync();
 
+  if (!data_descriptions_ready_) {
+    throw std::runtime_error("Failed to get data descriptions from server.");
+  }
+
   // generate the id vectors corresponding to the names
   GenerateIDVectors();
 
@@ -454,9 +458,15 @@ void OptitrackMultiplexer::GetDataDescriptionsSync() {
   }
 
   auto result = data_descriptions_client_->async_send_request(request);
-  ::rclcpp::spin_until_future_complete(this->get_node_base_interface(), result);
-  data_descriptions_ = result.get()->data_descriptions;
-  data_descriptions_ready_ = true;
+  auto return_code = ::rclcpp::spin_until_future_complete(this->get_node_base_interface(), result);
+  if (return_code == rclcpp::FutureReturnCode::SUCCESS) {
+    data_descriptions_ = result.get()->data_descriptions;
+    data_descriptions_ready_ = true;
+  } else {
+    RCLCPP_ERROR(get_logger(), "Failed to get data descriptions. Exiting.");
+    data_descriptions_ready_ = false;
+    rclcpp::shutdown();
+  }
 }
 
 void OptitrackMultiplexer::DeclareRosParameters() {

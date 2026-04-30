@@ -29,7 +29,7 @@ public:
   // NATNET_CALLCONV
   void ProcessFrame(sFrameOfMocapData *data);
 
-  void SetupNatNet();
+  bool SetupNatNet();
 
 private:
   /*---------- class methods ----------*/
@@ -48,7 +48,7 @@ private:
   void InitializeClientParams();
 
   // connect to optitrack
-  void ConnectOptitrack();
+  bool ConnectOptitrack();
 
   // get data descriptions
   void GetDataDescriptions();
